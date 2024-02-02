@@ -1,5 +1,5 @@
 const { Events, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const { checkRecruitStage, makeMessageLink } = require('../library.js')
+const { checkRecruitStage, makeMessageLink } = require('../library/functions.js')
 
 module.exports = {
 	name: Events.MessageCreate,

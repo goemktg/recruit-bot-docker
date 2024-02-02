@@ -1,6 +1,6 @@
 const { Events, ChannelType, PermissionsBitField, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const axios = require('axios');
-const { checkRecruitStage, makeMessageLink, getRecruitInfo, isBanTarget } = require('../library.js')
+const { checkRecruitStage, getRecruitInfo, isBanTarget, makeMessageLink } = require('../library/functions.js')
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -21,7 +21,10 @@ module.exports = {
                 //console.log(tempChannels.entries().next().value[1]);
     
                 if (tempChannels.size) {
-                    await interaction.reply(`이미 전용 채널이 생성되었습니다! 다음 단계를 ${tempChannels.entries().next().value[1]} 채널 에서 진행해 주세요.`);
+                    await interaction.reply({
+                        content: `이미 전용 채널이 생성되었습니다! 다음 단계를 ${tempChannels.entries().next().value[1]} 채널 에서 진행해 주세요.`,
+			            ephemeral: true,
+                    });
     
                     return;
                 }
@@ -46,7 +49,10 @@ module.exports = {
                     ]
                 })
             
-                await interaction.reply(`디스코드에 전용 채널 ${consultingChannel}이(가) 생성되었습니다! 해당 채널에서 진행해 주세요.`);
+                await interaction.reply({
+                    content: `디스코드에 전용 채널 ${consultingChannel}이(가) 생성되었습니다! 해당 채널에서 진행해 주세요.`,
+                    ephemeral: true,
+                });
                 
                 var responseMsg = '';
                 
@@ -206,7 +212,7 @@ module.exports = {
             // PVP 동의 확인, SeAT 등록 시작
             //
             else if (interaction.customId == 'agreePVP') {
-                const confirmString = 'PVP 동의를 확인했습니다.\n\n아래 \'SeAT\' 버튼을 눌러 웹사이트를 방문하여 이브온라인 계정으로 로그인한 뒤, 메인 캐릭터를 등록하고 \'등록 완료\'버튼을 눌러주세요. 스파이 방지 등을 위해 필요한 절차입니다.\n정보를 받아오는 데 10~30분 정도의 시간이 걸립니다. 그 동안 혹시 알트가 있으시다면 아래 \'가이드\' 버튼을 눌러 나오는 사이트를 참고하여 알트를 추가해 주세요.';
+                const confirmString = 'PVP 동의를 확인했습니다.\n\n아래 \'SeAT\' 버튼을 눌러 웹사이트를 방문하여 이브온라인 계정으로 로그인한 뒤, 메인 캐릭터를 등록하고 \'등록 완료\'버튼을 눌러주세요. 스파이 방지 등을 위해 필요한 절차입니다.\n**API의 한계로 정보를 받아오는 데 10~30분 정도의 시간이 걸립니다.** 그 동안 혹시 알트가 있으시다면 아래 \'가이드\' 버튼을 눌러 나오는 사이트를 참고하여 알트를 추가해 주세요.';
                 const isPassed = await checkRecruitStage(interaction.channel, confirmString);
                 if (!isPassed[0]) {
                     await interaction.reply(`이미 PVP 동의를 확인했습니다. 다음 단계를 ${makeMessageLink(isPassed[1])} 해당 메시지에서 진행해 주세요.`);
