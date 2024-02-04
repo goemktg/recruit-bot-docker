@@ -3,6 +3,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, Collection, ActivityType } = require('discord.js');
 
+// load from .env if exists
+try {
+	const dotenv = require('dotenv');
+	dotenv.config();
+} catch (ex) {
+    console.log('.env not found. using docker environment variable')
+}
+
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent,] });
 
