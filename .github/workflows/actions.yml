@@ -17,8 +17,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            goemktg/newbee-stalker-bot
-          tag-semver: |
+            goemktg/recruit-bot
+          tags: |
             type=semver,pattern={{version}}
       -
         name: Set up Docker Buildx
