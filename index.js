@@ -74,29 +74,34 @@ client.on(Events.InteractionCreate, async interaction => {
 // When the client is ready, run this code (only once).
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
 // It makes some properties non-nullable.
-client.once(Events.ClientReady, readyClient => {
+client.once(Events.ClientReady, async readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 
-	// 공지 메시지 만드는 용
-	// const noticeChannel = client.channels.cache.find(c => c.type === 0 &&  c.name === '안내');
-	
-	// const startRecruit = new ButtonBuilder()
-	// 	.setCustomId('startRecruit')
-	// 	.setLabel('가입 시작')
-	// 	.setStyle(ButtonStyle.Success);
+	// 공지 채널이 비었으면 공지 메시지를 새로 보냄
+	const channel = readyClient.channels.cache.find(channel => channel.name === '안내' && channel.guildId === process.env.DEPLOY_TARGET_GUILD_ID);
+	const messages = await channel.messages.fetch({ limit: 1 });
 
-	// const startConv = new ButtonBuilder()
-	// 	.setCustomId('startConv')
-	// 	.setLabel('기타 문의')
-	// 	.setStyle(ButtonStyle.Secondary);
+	if (!messages.some(item => item)) { 
+		console.log('No messages in notice channel. making new one...');
 
-	// const row = new ActionRowBuilder()
-	// 	.addComponents(startRecruit, startConv);
+		const startRecruit = new ButtonBuilder()
+			.setCustomId('startRecruit')
+			.setLabel('가입 시작')
+			.setStyle(ButtonStyle.Success);
 
-	// noticeChannel.send({
-	// 	content: `Nisuwaz 가입 절차를 시작하시려면 하단 '가입 시작' 버튼을, 다른 용무나 가입 관련 질문은 '기타 문의' 버튼을 통해 진행해 주세요`,
-	// 	components: [row],
-	// });
+		const startConv = new ButtonBuilder()
+			.setCustomId('startConv')
+			.setLabel('기타 문의')
+			.setStyle(ButtonStyle.Secondary);
+
+		const row = new ActionRowBuilder()
+			.addComponents(startRecruit, startConv);
+
+		channel.send({
+			content: `Nisuwaz 가입 절차를 시작하시려면 하단 '가입 시작' 버튼을, 다른 용무나 가입 관련 질문은 '기타 문의' 버튼을 통해 진행해 주세요`,
+			components: [row],
+		});
+	}
 
 	// 활동 설정
 	client.user.setPresence({

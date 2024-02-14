@@ -7,7 +7,6 @@ module.exports = {
 	async execute(interaction) {
         const ConfirmStringMainchar = '메인 계정이 확인되었습니다. 아래 정보가 맞는지 확인하시고, 그 아래 박스에서 리크룻 경로를 선택해 주세요.';
         const confirmStringRoute = "리크룻 경로가 다음과 같이 선택되었습니다:";
-        const recruiterRoleID = '1200771439511482398';
 
         if (interaction.isButton()) {
             //
@@ -30,6 +29,7 @@ module.exports = {
                 }
             
                 const consultingCategory = interaction.client.channels.cache.find(c => c.type === 4 &&  c.name === '상담중');
+                const recruiterRole = interaction.guild.roles.cache.find(role => role.name == '리크루터');
             
                 var responseType = ''
                 if (interaction.customId == 'startRecruit') responseType = '리크룻'
@@ -44,7 +44,7 @@ module.exports = {
                             allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.ReadMessageHistory, PermissionsBitField.Flags.SendMessages],
                         },
                         {
-                            id: recruiterRoleID,
+                            id: recruiterRole.id,
                         },
                     ]
                 })
@@ -177,7 +177,8 @@ module.exports = {
                         'corp': corpNames.map(corporation => corporation.name),
                     };
 
-                    const [isBan, reason] = isBanTarget(charInfoByType, recruiterRoleID);
+                    const recruiterRole = interaction.guild.roles.cache.find(role => role.name == '리크루터');
+                    const [isBan, reason] = isBanTarget(charInfoByType, recruiterRole.id);
 
                     let channel = submitted.guild.channels.cache.find(channel => channel.name === '리크루터-working');
                     if (isBan)
@@ -277,7 +278,8 @@ module.exports = {
 
                     await interaction.editReply(confirmString);
                     
-                    const recruitDetailString = `<@&${recruiterRoleID}>`+'\n```가입 정보:\n\n'+
+                    const recruiterRole = interaction.guild.roles.cache.find(role => role.name == '리크루터');
+                    const recruitDetailString = `<@&${recruiterRole.id}>`+'\n```가입 정보:\n\n'+
                     `가입 캐릭터 명: ${maincharName}\n`+
                     `가입 ${recruitRouteString}\n`+
                     `반말, PVP 동의`+'```';
