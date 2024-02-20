@@ -1,18 +1,12 @@
-// Require the necessary discord.js classes
+const { Client, Events, GatewayIntentBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, ActivityType } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Events, GatewayIntentBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, ActivityType } = require('discord.js');
+const { loadEnvironmentVariables } = require('./library/functions.js');
 
-// load from .env if exists
-try {
-	const dotenv = require('dotenv');
-	dotenv.config();
-} catch (ex) {
-    console.log('.env not found. using docker environment variable')
-}
+loadEnvironmentVariables();
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent,] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 // 이벤트 파일 init
 const eventsPath = path.join(__dirname, 'events');
@@ -23,7 +17,8 @@ for (const file of eventFiles) {
 	const event = require(filePath);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
-	} else {
+	}
+	else {
 		client.on(event.name, (...args) => event.execute(...args));
 	}
 }
@@ -32,7 +27,6 @@ for (const file of eventFiles) {
 (async () => {
 	const handleCommands = require('./library/commands-handler.js');
 	const commends = await handleCommands('init');
-	//console.log('recived commends:', commends);
 	client.commands = commends;
 })();
 
@@ -49,11 +43,13 @@ client.on(Events.InteractionCreate, async interaction => {
 
 	try {
 		await command.execute(interaction);
-	} catch (error) {
+	}
+	catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
 			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		} else {
+		}
+		else {
 			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 		}
 	}
@@ -66,10 +62,10 @@ client.once(Events.ClientReady, async readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 
 	// 공지 채널이 비었으면 공지 메시지를 새로 보냄
-	const channel = readyClient.channels.cache.find(channel => channel.name === '안내' && channel.guildId === process.env.DEPLOY_TARGET_GUILD_ID);
-	const messages = await channel.messages.fetch({ limit: 1 });
+	const targetChannel = readyClient.channels.cache.find(channel => channel.name === '안내' && channel.guildId === process.env.DEPLOY_TARGET_GUILD_ID);
+	const messages = await targetChannel.messages.fetch({ limit: 1 });
 
-	if (!messages.some(item => item)) { 
+	if (!messages.some(item => item)) {
 		console.log('No messages in notice channel. making new one...');
 
 		const startRecruit = new ButtonBuilder()
@@ -85,8 +81,8 @@ client.once(Events.ClientReady, async readyClient => {
 		const row = new ActionRowBuilder()
 			.addComponents(startRecruit, startConv);
 
-		channel.send({
-			content: `Nisuwaz 가입 절차를 시작하시려면 하단 '가입 시작' 버튼을, 다른 용무나 가입 관련 질문은 '기타 문의' 버튼을 통해 진행해 주세요`,
+		targetChannel.send({
+			content: 'Nisuwaz 가입 절차를 시작하시려면 하단 \'가입 시작\' 버튼을, 다른 용무나 가입 관련 질문은 \'기타 문의\' 버튼을 통해 진행해 주세요',
 			components: [row],
 		});
 	}
@@ -95,9 +91,9 @@ client.once(Events.ClientReady, async readyClient => {
 	client.user.setPresence({
 		activities: [{
 			type: ActivityType.Custom,
-			name: "custom", // name is exposed through the API but not shown in the client for ActivityType.Custom
-			state: "리크루팅 관리 중",
-		}]
+			name: 'custom',
+			state: '리크루팅 관리 중',
+		}],
 	});
 });
 

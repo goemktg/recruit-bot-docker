@@ -5,7 +5,7 @@ module.exports = {
 		.setName('상담완료')
 		.setDescription('상담을 완료시킵니다.'),
 	async execute(interaction) {
-        
+
 		const buttonOk = new ButtonBuilder()
 			.setCustomId('recruitFinOk')
 			.setLabel('예')
@@ -29,32 +29,34 @@ module.exports = {
 			// timeout (60sec)
 			time: 60000,
 		}).then(async submitted => {
-			if (submitted.customId == 'recruitFinNo') { // 취소
-				await submitted.update({ content: '상담 완료 명령이 취소되었습니다.', components: []});
+			if (submitted.customId == 'recruitFinNo') {
+				// 취소
+				await submitted.update({ content: '상담 완료 명령이 취소되었습니다.', components: [] });
 				return;
 			}
 
-			await submitted.update({ content: '상담 완료 명령을 처리 중입니다...', components: []});
-			let today = new Date();
+			await submitted.update({ content: '상담 완료 명령을 처리 중입니다...', components: [] });
+			const today = new Date();
 
-			var year = today.getFullYear();
-			var month = ('0' + (today.getMonth() + 1)).slice(-2);
-			var day = ('0' + today.getDate()).slice(-2);
+			const year = today.getFullYear();
+			const month = ('0' + (today.getMonth() + 1)).slice(-2);
+			const day = ('0' + today.getDate()).slice(-2);
 
-			const targetCategories = submitted.guild.channels.cache.filter(c => c.type === 4 &&  c.name === '상담완료');
+			const targetCategories = submitted.guild.channels.cache.filter(c => c.type === 4 && c.name === '상담완료');
 
 			await submitted.channel.setParent(targetCategories.entries().next().value[1].id);
-			await submitted.channel.setName(submitted.channel.name + '_' + year + '-' + month  + '-' + day);
+			await submitted.channel.setName(submitted.channel.name + '_' + year + '-' + month + '-' + day);
 			await submitted.channel.lockPermissions();
 			await submitted.channel.send(`${submitted.member.nickname}님이 상담완료 명령을 사용하여 이 채널을 완료 처리 하였습니다.`);
 		})
-		.catch(async error => {
-			if (error.message == 'Collector received no interactions before ending with reason: time') //timeout
-				await interaction.editReply({ content: '입력 시간이 초과되었습니다. (60초)', components: []});
-			else {
-				await interaction.editReply({ content: '처리중 오류가 발생했습니다.', components: []});
-				console.log(error);
-			}
-		});
+			.catch(async error => {
+				if (error.message == 'Collector received no interactions before ending with reason: time') {
+					await interaction.editReply({ content: '입력 시간이 초과되었습니다. (60초)', components: [] });
+				}
+				else {
+					await interaction.editReply({ content: '처리중 오류가 발생했습니다.', components: [] });
+					console.log(error);
+				}
+			});
 	},
 };
