@@ -1,63 +1,16 @@
 const { Client, Events, GatewayIntentBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, ActivityType } = require('discord.js');
-const fs = require('node:fs');
-const path = require('node:path');
 const { loadEnvironmentVariables } = require('./library/functions.js');
 
 loadEnvironmentVariables();
 
-// Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
-// 이벤트 파일 init
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+const commandsHandler = (new require('./library/commands-handler.js'))();
+const { commands } = commandsHandler.getCommands();
+client.commands = commands;
 
-for (const file of eventFiles) {
-	const filePath = path.join(eventsPath, file);
-	const event = require(filePath);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
-	}
-	else {
-		client.on(event.name, (...args) => event.execute(...args));
-	}
-}
+client.login(process.env.DISCORD_TOKEN);
 
-// 봇에 명령어 등록
-(async () => {
-	const handleCommands = require('./library/commands-handler.js');
-	const commends = await handleCommands('init');
-	client.commands = commends;
-})();
-
-
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
-
-	const command = interaction.client.commands.get(interaction.commandName);
-
-	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
-		return;
-	}
-
-	try {
-		await command.execute(interaction);
-	}
-	catch (error) {
-		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-		else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-		}
-	}
-});
-
-// When the client is ready, run this code (only once).
-// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
-// It makes some properties non-nullable.
 client.once(Events.ClientReady, async readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 
@@ -97,5 +50,8 @@ client.once(Events.ClientReady, async readyClient => {
 	});
 });
 
-// Log in to Discord with your client's token
-client.login(process.env.DISCORD_TOKEN);
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
+
+	commandsHandler.executeCommands(interaction);
+});
