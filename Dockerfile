@@ -4,7 +4,7 @@ COPY ./package.json ./
 RUN npm install --omit=dev
 COPY ./index.js ./
 COPY ./data.js ./
-COPY ./events/* ./events/
+COPY ./recruit-handler.js ./
 COPY ./commands/* ./commands/
 COPY ./library/* ./library/
 CMD [ "node", "index.js" ]
