@@ -6,7 +6,6 @@ loadEnvironmentVariables();
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
-// TODO : commandsHandler -> CommandsHandler
 const commandsHandler = new (require('./library/commands-handler.js'))();
 const { commands } = commandsHandler.getCommands();
 client.commands = commands;
