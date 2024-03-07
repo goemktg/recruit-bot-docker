@@ -1,6 +1,6 @@
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder, PermissionsBitField, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder, PermissionsBitField, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 
-module.exports = class RecruitHandler {
+export class RecruitHandler {
 	constructor() {
 		this.confirmString = {
 			masterCondition: '조건 숙지를 확인했습니다. 다음으로 하단 버튼을 눌러 나오는 메뉴에서 **자신의 메인 캐릭터 명**을 입력해 주세요.',
