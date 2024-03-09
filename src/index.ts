@@ -1,7 +1,7 @@
 import { Client, Events, GatewayIntentBits, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageCreateOptions } from 'discord.js';
 import { loadEnvironmentVariables, sendAnnouncementMsgs, setDefaultLogLevel, setDiscordPresence } from './library/functions';
 import { CommandsHandler } from './library/handlers/Commands';
-import { RecruitHandler } from './recruit-handler';
+import { RecruitHandler } from './recruitHandler';
 
 loadEnvironmentVariables();
 setDefaultLogLevel();
@@ -19,12 +19,12 @@ client.once(Events.ClientReady, async readyClient => {
 	client.commands = await commandsHandler.getCommandsFromDir();
 
 	const startRecruit = new ButtonBuilder()
-		.setCustomId('startRecruit')
+		.setCustomId('{"step":"create-channel","type":"recruit"}')
 		.setStyle(ButtonStyle.Success)
 		.setLabel('가입 시작');
 
 	const startConv = new ButtonBuilder()
-		.setCustomId('startConv')
+		.setCustomId('{"step":"create-channel","type":"conv"}')
 		.setStyle(ButtonStyle.Secondary)
 		.setLabel('기타 문의');
 
@@ -36,7 +36,6 @@ client.once(Events.ClientReady, async readyClient => {
 
 	void sendAnnouncementMsgs(client, channelMsg);
 
-	// 활동 설정
 	setDiscordPresence(readyClient.user, '리크루팅 관리 중');
 });
 
@@ -49,17 +48,13 @@ client.on(Events.InteractionCreate, interaction => {
 client.on(Events.InteractionCreate, interaction => {
 	if (!interaction.isButton()) return;
 
-	if (interaction.customId == 'startRecruit' || interaction.customId == 'startConv') {void recruitHandler.startConvOrRecruit(interaction);}
-	else if (interaction.customId == 'startInputName') {void recruitHandler.startInputName(interaction);}
-	else if (interaction.customId == 'agreeInformal') {void recruitHandler.agreeInformal(interaction);}
-	else if (interaction.customId == 'agreePVP') {void recruitHandler.agreePVP(interaction);}
-	else if (interaction.customId == 'registrationEnd') {void recruitHandler.registrationEnd(interaction);}
+	void recruitHandler.handleRecruitStep(interaction, interaction.customId);
 });
 
 client.on(Events.InteractionCreate, interaction => {
 	if (!interaction.isStringSelectMenu()) return;
 
-	void recruitHandler.confirmStringRoute(interaction);
+	void recruitHandler.handleRecruitStep(interaction, interaction.customId);
 });
 
 client.on(Events.GuildMemberAdd, member => {
@@ -69,5 +64,5 @@ client.on(Events.GuildMemberAdd, member => {
 client.on(Events.MessageCreate, message => {
 	if (message.content != '/조건숙지함') return;
 
-	void recruitHandler.masterCondition(message);
+	void recruitHandler.handleRecruitStep(message, '{"step":"start-enter-main-char"}');
 });
