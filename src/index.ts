@@ -23,13 +23,13 @@ client.once(Events.ClientReady, async readyClient => {
 		.setStyle(ButtonStyle.Success)
 		.setLabel('가입 시작');
 
-	const startConv = new ButtonBuilder()
-		.setCustomId('{"step":"create-channel","type":"conv"}')
+	const startDaehwa = new ButtonBuilder()
+		.setCustomId('{"step":"create-channel","type":"daehwa"}')
 		.setStyle(ButtonStyle.Secondary)
 		.setLabel('기타 문의');
 
 	const row = new ActionRowBuilder<ButtonBuilder>()
-		.addComponents(startRecruit, startConv);
+		.addComponents(startRecruit, startDaehwa);
 
 	const message = 'Nisuwaz / Corn Soup. Industrial 가입 절차를 시작하시려면 하단 \'가입 시작\' 버튼을, 다른 용무나 가입 관련 질문은 \'기타 문의\' 버튼을 통해 진행해 주세요 \n마지막 수정일 2024/05/27';
 	const channelMsg: MessageCreateOptions = { content: message, components: [row] };
