@@ -219,11 +219,13 @@ export class RecruitHandler {
 	async recruitStepStartEnterMainChar(message: Message, recruitData: NextStepStartEnterMainChar) {
 		const passedThisStep = await this.isRecruitStepExist(message.channel as TextChannel, recruitStepData[recruitData.step].content);
 		if (passedThisStep) {
-			await message.channel.send('이미 조건을 숙지하셨습니다. 다음 절차를 진행해 주세요.');
+			if (message.channel instanceof TextChannel) {
+				await message.channel.send('이미 조건을 숙지하셨습니다. 다음 절차를 진행해 주세요.');
+			}
 			return;
 		}
 
-		await message.channel.send({
+		await (message.channel as TextChannel).send({
 			content: recruitStepData[recruitData.step].content,
 			components: recruitStepData[recruitData.step].row,
 		});
@@ -439,7 +441,7 @@ export class RecruitHandler {
 		const row = new ActionRowBuilder<ButtonBuilder>()
 			.addComponents(seatLink, evewhoLink);
 
-		await interaction.channel?.send({
+		await (interaction.channel as TextChannel)?.send({
 			content: recruitDetailString,
 			components: [row],
 		});
