@@ -1,4 +1,4 @@
-name: Github Actions
+name: Build and Push Docker Image
 
 on:
   push:
@@ -10,8 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: true
       - name: Docker meta
         id: docker_meta
         uses: docker/metadata-action@v5
