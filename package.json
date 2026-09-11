@@ -1,29 +1,38 @@
 {
-  "name": "recruit-bot-docker",
+  "name": "recruit-bot",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Standalone Discord recruitment bot extracted from auth-bot-docker",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "deploy-commands": "ts-node scripts/deployCommands.ts",
+    "test": "npm run build && node --test tests/*.test.js",
+    "typecheck": "tsc --noEmit"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "discord",
+    "recruitment",
+    "eve-online"
+  ],
   "license": "ISC",
   "dependencies": {
     "axios": "^1.7.7",
-    "discord.js": "^14.16.3",
-    "loglevel": "^1.9.2"
+    "commander": "^14.0.0",
+    "discord.js": "^14.19.3",
+    "loglevel": "^1.9.2",
+    "node-cron": "^4.0.5",
+    "xstate": "^5.25.0"
   },
   "devDependencies": {
-    "@types/pg": "^8.11.10",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
-    "@typescript-eslint/parser": "^8.15.0",
-    "dotenv": "^16.4.5",
-    "eslint": "^9.15.0",
+    "@typescript-eslint/parser": "^8.32.1",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "pg": "^8.13.1",
-    "prettier": "^3.3.3",
-    "ts-node": "^10.9.2"
+    "eslint-plugin-prettier": "^5.4.0",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
